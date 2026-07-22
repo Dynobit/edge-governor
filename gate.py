@@ -110,12 +110,20 @@ def evaluate(c: dict[str, Any], k=KNOWLEDGE) -> Verdict:
     scaling = bool(c.get("capital_scaling", False))
     proven = bool(c.get("proven", False))
     meaningful = (honest >= k.meaningful_usd_day) or (beats_bench and scaling and proven)
+    on_scaling_track = beats_bench and scaling   # path (b) minus the proof
     if honest >= k.meaningful_usd_day:
         mdetail = f"${honest:.2f}/day >= ${k.meaningful_usd_day:.0f}/day bar"
-    elif beats_bench and scaling and proven:
+    elif on_scaling_track and proven:
         mdetail = f"{daily_pct*100:.2f}%/day beats {k.benchmark_daily_pct*100:.3f}%/day HLP x{k.benchmark_margin:.0f}, proven+scaling"
+    elif on_scaling_track and not proven:
+        # capital-scaling high-% edge, benchmark-clearing — the ONLY live blocker is the
+        # realized proof. Do NOT cite the absolute $/day bar: path (b) does not require it.
+        mdetail = (f"PROOF-GATED only: {daily_pct*100:.3f}%/day beats HLP x{k.benchmark_margin:.0f} "
+                   f"({k.benchmark_daily_pct*k.benchmark_margin*100:.2f}%/day) at ${cap:,.0f} risk capital + scaling; "
+                   f"needs realized proof, not more $/day")
     else:
         gaps = []
+        # only cite the absolute-$ bar when the capital-scaling path is NOT open
         if honest < k.meaningful_usd_day:
             gaps.append(f"${honest:.2f}/d < ${k.meaningful_usd_day:.0f}/d bar")
         if not beats_bench:

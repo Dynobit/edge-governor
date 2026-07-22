@@ -67,7 +67,12 @@ def normalize(s: dict, path: str) -> dict | None:
         honest = float(s["strict_net_usd"]) / hrs * 24.0
         touch_day = (float(s["touch_net_usd"]) / hrs * 24.0) if s.get("touch_net_usd") is not None else None
         headline = max(x for x in [touch_day, s.get("paper_net_per_day_usd"), honest] if x is not None)
-        capital = _first_num(s, "gross_inv_usd", "capital_usd") or None
+        # capital-at-risk = the lane's DECLARED risk capital. gross_inv_usd is a snapshot
+        # (≈0 when the MM is flat) and must NOT be used as the %/day denominator — doing so
+        # made the gate fall back to the ~$560 estate default and dilute a real high-% MM
+        # edge below the HLP hurdle (the 2026-07-22 mis-integration). capital_usd/gross_inv
+        # kept only as last-resort fallbacks for older surfaces.
+        capital = _first_num(s, "capital_at_risk_usd", "capital_usd")
         sample_hours = hrs
     else:
         honest = _first_num(s, "summary.est_net_usd_per_day", "est_net_usd_per_day",
