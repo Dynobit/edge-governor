@@ -1,63 +1,30 @@
-# edge-governor — the meaningfulness governor + live-edge hunter
+# Edge Governor — reproducible verdicts + verifiable estate
 
-One authority that decides whether the live MEV system has a **real, meaningful,
-capturable edge** — and if not, **where to hunt for one**. Built to end the
-ad-hoc-piecemeal failure mode: sub-meaningful lanes dressed up as progress, and
-false-greens (the 108-score backrun that nets $0, the HIP-3 "+$28" that's a 57×
-touch-model artifact) surfaced as "top lane."
+Two claims, both checkable from this repo alone:
 
-## What it does
+1. **The edge map is receipt-backed.** `governor.py` is the truth-gate that produced
+   ATLAS.md / CREDENTIAL.md. Run it against the bundled receipts:
 
-```
-ingest.py   read every live lane surface -> normalize (strict-net, capital, landable, proven)
-gate.py     the truth filter: a candidate PASSES only if it is real (strict net > 0,
-            not an artifact), transactable (not phantom), landable (no builder seat),
-            real-capital-sized, non-toxic, AND meaningful (>= $/day bar OR proven +
-            capital-scaling + beats HLP by margin). Else REJECTED, with the exact
-            reasons and — constructively — what it NEEDS to pass.
-scanner.py  the constructive half. EDGE_CAN_LIVE = the inverse of every way edges died.
-            Reads live fresh-flow sentinels, ranks fresh/uncontested markets by MEASURED
-            edge, and lists the closest existing lanes + their needs. Directs the hunt.
-capture.py  on a PASS -> a FAIL-CLOSED capture packet (what/where/net/arm-gate). Never
-            executes, never moves capital. Operator arm is the only human step.
-knowledge.py the accumulated edge knowledge, machine-readable: DEAD_LANES (+ why/gate),
-            FALSE_GREEN_PATTERNS (detectors), the HLP benchmark, the meaningfulness bar,
-            and EDGE_CAN_LIVE (the positive hunt profile).
-governor.py  end-to-end: ingest -> gate -> scan -> capture -> verdict + ledger + report.
-            Supersedes the raw router score; flags any "top lane" it rejects as a false-green.
-```
+       EDGE_TOPO=fixtures/topology python3 governor.py
+       python3 test_governor.py        # 11 gate tests
 
-## Run
+2. **The track record derives from public data.** `verify_estate.py` recomputes the
+   estate from Hyperliquid's public info API and validates the published hash-chained
+   history (each record embeds sha256 of the previous line — edit anything and every
+   later link breaks):
 
-```
-./run.sh                 # run once + human report
-./run.sh --json          # machine verdict -> state/governed-surface.json
-./run.sh --watch 300     # loop every 300s
-python3 test_governor.py # 11 truth tests
-```
+       python3 verify_estate.py --address <published address> --chain estate_chain.jsonl
 
-Outputs: `state/governed-surface.json` (full verdict), `state/governed_top_lane.json`
-(the authoritative top-lane, supersedes the router's raw score), `state/governor-ledger.jsonl`.
+stdlib only. No keys. Nothing here signs, deploys, or moves funds.
+Fixture surfaces are sanitized copies of the live lane state the governor gated on
+(internal hosts redacted; verdict-relevant numbers untouched).
 
-## The bar (operator rule: no propping sub-meaningful ROI)
+## Published estate (verify it yourself)
 
-- `GOV_MEANINGFUL_USD_DAY` (default $10/day) — the absolute floor, OR
-- proven + capital-scaling + beats HLP (`GOV_BENCHMARK_APR` 18%) by `GOV_BENCHMARK_MARGIN` (5×).
-- `GOV_REAL_CAPITAL_USD` (default $560) — ROI is never scaled to capital we don't have.
-- `GOV_ARTIFACT_RATIO` (3×) — headline > 3× strict/executable ⇒ governed on strict.
+Main Hyperliquid account: `0xbe6C1b09662BbE52CC93279D103Feb27985DdBc1`
+The committed `estate_chain.jsonl` is the hash-chained history for the whole estate
+(all addresses inside it). Recompute right now:
 
-## First live verdict (2026-07-22)
+    python3 verify_estate.py --address 0xbe6C1b09662BbE52CC93279D103Feb27985DdBc1 --chain estate_chain.jsonl
 
-`NO EDGE PASSES.` Closest: `hip3_thin_market_mm` ($2.24/day strict, closeness 0.86) —
-needs to clear the $10/day bar OR become proven+scaling. Backrun (router's 108 "top
-lane") → REJECT ($0 net, seat-walled). HIP-3 63× touch artifact caught → governed on
-strict. Hunt: 92 fresh markets ranked by measured net; top real ones = CRWV/BE/KIOXIA,
-directive "extend tape to 72h + prove." No capture packet emitted (nothing passes) —
-honestly, no propping.
-
-## Where a live edge gets captured
-
-The governor doesn't trade. It finds (hunt), gates (truth), and directs. Capture happens
-when a lane proves out (e.g. a fresh HIP-3 market's 72h tape) and passes the gate → a
-fail-closed capture packet → operator arm. The one structurally-open lane is EARLINESS in
-a fresh, uncontested market — which is exactly what the hunt ranks.
+Anything that doesn't recompute is a lie — call it out.
