@@ -1,0 +1,63 @@
+{
+  "arm_gate": {
+    "armed": false,
+    "blockers": [
+      "arm_gate_red:env_INCLUSION_PROBE_LIVE",
+      "arm_gate_red:env_INCLUSION_PROBE_BROADCAST",
+      "arm_gate_red:positive_sim",
+      "arm_gate_red:node_at_head"
+    ],
+    "conditions": {
+      "env_INCLUSION_PROBE_BROADCAST": false,
+      "env_INCLUSION_PROBE_LIVE": false,
+      "no_kill_file": true,
+      "node_at_head": false,
+      "positive_sim": false,
+      "signer_present": true
+    }
+  },
+  "broadcast": false,
+  "buildernet": {
+    "enabled": false,
+    "endpoint": "https://rpc.buildernet.org",
+    "verify_note": "VERIFY endpoint + TEE attestation cert (attested-get --addr=https://rpc.buildernet.org:7936/cert) before enabling; auth = X-Flashbots-Signature (EIP-191 of json body). Disabled unless INCLUSION_PROBE_BUILDERNET=1."
+  },
+  "candidate_source_node": {
+    "at_head": false,
+    "chain": "arbitrum",
+    "endpoint": "http://<internal-host>:8547",
+    "head_block": null,
+    "lag_blocks": null,
+    "reachable": false,
+    "ref_block": null
+  },
+  "candidates_considered": 0,
+  "decision": {
+    "blockers": [
+      "arb_node_unreachable",
+      "arm_gate_red:env_INCLUSION_PROBE_BROADCAST",
+      "arm_gate_red:env_INCLUSION_PROBE_LIVE",
+      "arm_gate_red:node_at_head",
+      "arm_gate_red:positive_sim"
+    ],
+    "landings": [],
+    "landings_count": 0,
+    "next_action": "candidate-source (Arb) node not at head \u2014 harness measures nothing yet; self-lights when Arb syncs (~Jul-23), then flip arm flags",
+    "per_builder_attempts": {},
+    "receipt_truth_gate": "a landing counts ONLY with onchain_status==1 + our tx in a sealed block + builder attributed",
+    "status": "INCLUSION_PROBE_PENDING_NODE"
+  },
+  "dry_run": true,
+  "execution_enabled": false,
+  "generated_at": "2026-07-22T03:04:00Z",
+  "l1_sim_endpoint": "http://<internal-host>:8545",
+  "mode": "receipt_truth_inclusion_probe",
+  "mutated_network": false,
+  "paper_only": true,
+  "schema": 1,
+  "signed": false,
+  "sims": [],
+  "source": "inclusion-probe/probe.py",
+  "updated": 1784689440,
+  "wallet_loaded": false
+}

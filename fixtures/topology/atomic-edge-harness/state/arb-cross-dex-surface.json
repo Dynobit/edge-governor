@@ -1,0 +1,33 @@
+{
+  "best_net_usd": 0.0,
+  "blockers": [
+    "arb_node_unreachable_expected_until_restore_completes"
+  ],
+  "candidate_count": 0,
+  "candidates": [],
+  "chain_id": 42161,
+  "dexes_available": [],
+  "dexes_configured": [
+    "uniswap_v3",
+    "camelot_v3"
+  ],
+  "executor_capable": false,
+  "family": "l2_confirmed_state_cross_dex_arb",
+  "floor_usd": 0.16,
+  "gas_usd": 0.02,
+  "generated_at": "2026-07-22T12:07:01Z",
+  "lane": "arbitrum_cross_dex_backrun",
+  "live_trading_enabled": false,
+  "notionals_usd": [
+    5.0,
+    25.0,
+    50.0
+  ],
+  "pairs_scanned": 0,
+  "paper_only": true,
+  "reachable": false,
+  "ready": false,
+  "schema": 1,
+  "source": "atomic-edge-harness/arb_cross_dex_scanner.py",
+  "updated": 1784722021
+}

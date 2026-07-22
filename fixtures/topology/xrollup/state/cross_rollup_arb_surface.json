@@ -1,0 +1,100 @@
+{
+  "id": "cross_rollup_arb_weth_usdc",
+  "family": "cross_rollup_arb",
+  "venue": "base|arbitrum|optimism",
+  "status": "XROLLUP_OBSERVED_NO_NET_EDGE_IN_SAMPLE",
+  "admissibility": "allowed_non_toxic",
+  "policy": "observe_only_until_capital",
+  "expected_usd_day": 0.0,
+  "candidate_count": 0.0,
+  "profitable_count": 0.0,
+  "executable_count": 0.0,
+  "build_blockers": [
+    "observe_only_no_keys",
+    "inventory_capital_required"
+  ],
+  "live_blockers": [
+    "bridge_rebalance_risk_unhedged",
+    "no_net_positive_gap_in_sample",
+    "arbitrum_own_node_not_routed_using_public_rpc",
+    "base_own_node_down_using_public_rpc"
+  ],
+  "blockers": [
+    "observe_only_no_keys",
+    "inventory_capital_required",
+    "bridge_rebalance_risk_unhedged",
+    "no_net_positive_gap_in_sample",
+    "arbitrum_own_node_not_routed_using_public_rpc",
+    "base_own_node_down_using_public_rpc"
+  ],
+  "next_action": "pre-position WETH+USDC inventory on Base+Arbitrum+Optimism and add a fast-bridge rebalance lane (Across/CCTP) to capture the persistent gap; until then OBSERVE ONLY",
+  "expected_net_usd": 0.0,
+  "opportunity_count": 0,
+  "candidate": null,
+  "ready": false,
+  "metrics": {
+    "best_net_usd_per_cycle": 0.0,
+    "mean_positive_net_usd_per_cycle": 0.0,
+    "notional_weth": 0.5,
+    "pairs": [
+      "WETH/USDC"
+    ],
+    "persistence": {
+      "WETH/USDC": {
+        "rounds": 3,
+        "valid": 3,
+        "gross_gap_bps_mean": 7.7351,
+        "gross_gap_bps_median": 8.0027,
+        "gross_gap_bps_max": 8.0106,
+        "net_usd_mean": -1.984424,
+        "net_usd_max": -1.962489,
+        "dominant_direction": {
+          "buy": "optimism",
+          "sell": "base"
+        },
+        "direction_stable_fraction": 0.667,
+        "longest_same_direction_run_rounds": 2,
+        "longest_same_direction_run_seconds": 12.0,
+        "longest_landable_run_rounds": 0,
+        "longest_landable_run_seconds": 0.0,
+        "opportunity_rounds": 0
+      }
+    },
+    "paper": "arXiv:2406.02172",
+    "edge_thesis": "non-atomic cross-rollup WETH/USDC arb; persists 10-20 blocks (Base ~420s) => latency-tolerant => NOT colo-gated; binding constraint is inventory+bridge = CAPITAL"
+  },
+  "evidence": [
+    {
+      "label": "observations.jsonl",
+      "artifact": "~/topology/xrollup/state/observations.jsonl",
+      "exists": true
+    },
+    {
+      "label": "persistence_summary.json",
+      "artifact": "~/topology/xrollup/state/persistence_summary.json",
+      "exists": true
+    }
+  ],
+  "ts": 1782657051.05739,
+  "iso": "2026-06-28T14:30:51Z",
+  "config": {
+    "notional_weth": 0.5,
+    "rounds": 3,
+    "interval_seconds": 6.0,
+    "cost_model": {
+      "gas_usd_buy_leg": 0.05,
+      "gas_usd_sell_leg": 0.05,
+      "bridge_bps_per_rebalance": 8.0,
+      "bridge_fixed_usd_per_rebalance": 1.5,
+      "cycles_per_rebalance": 10.0,
+      "inventory_usd_committed": 5000.0,
+      "inventory_apr_opportunity_cost": 0.08,
+      "expected_cycles_per_day": 4.0,
+      "execution_haircut_bps": 1.5,
+      "revert_rate": 0.04,
+      "revert_cost_usd": 0.1
+    },
+    "min_gross_gap_bps": 1.0,
+    "opportunity_net_usd_floor": 0.01
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "blockers": [
+    "no_positive_net_backrun_simulated"
+  ],
+  "broadcast": false,
+  "candidate": null,
+  "elapsed_s": 267.69,
+  "expected_net_usd": 0.0,
+  "family": "private_orderflow_backrun",
+  "handler_errors": 0,
+  "next_action": "coverage repaired (sims running); extend window, require positive net sim before promotion",
+  "node_ok": true,
+  "observe_only": true,
+  "opportunity_count": 0,
+  "ready": false,
+  "refund_fraction_assumed": 0.9,
+  "rpc_url": "http://<internal-host>:18545",
+  "signed": false,
+  "source": "ofa_backrun_pricer",
+  "status": "OFA_BACKRUN_FLOW_PRICED_NO_EDGE_YET",
+  "summary": {
+    "best_candidates": [],
+    "best_net_move": null,
+    "est_net_usd_per_day": 0.0,
+    "est_net_usd_window": 0.0,
+    "eth_usd": 1933.79,
+    "events_per_hr": 53791.8,
+    "events_total": 4000,
+    "gas_gwei": 0.0531,
+    "known_pool_moves": 438,
+    "moves_with_weth_leg": 289,
+    "priceable_fraction": 0.0,
+    "priced_moves": 0,
+    "profitable_candidates": 0,
+    "roundtrip_distribution": {
+      "best_usd": -0.0,
+      "best_weth": -0.0,
+      "median_weth": -3.12e-06,
+      "n": 80,
+      "positive_count": 0
+    },
+    "sim_attempts": 145,
+    "sizing_sources": {
+      "sized_hinted_weth_leg": 167,
+      "sized_sync_reserve_delta": 1
+    },
+    "skip_reasons": {
+      "logs_no_dex_swap": 3444,
+      "no_logs": 3,
+      "pool_unresolved": 10,
+      "skip_no_weth_leg": 149,
+      "skip_redacted_hint": 121,
+      "skip_single_venue": 23,
+      "unpriced_sim_no_edge": 145
+    },
+    "top_pairs": [
+      [
+        "0x936ad605/WETH",
+        93
+      ],
+      [
+        "0xa12cc123/USDT",
+        42
+      ],
+      [
+        "USDC/WETH",
+        26
+      ],
+      [
+        "WETH/USDT",
+        25
+      ],
+      [
+        "0x4d7078dd/USDC",
+        24
+      ],
+      [
+        "0x43dfc415/WETH",
+        23
+      ],
+      [
+        "USDC/0xb197e024",
+        13
+      ],
+      [
+        "0x7fc66500/WETH",
+        13
+      ]
+    ],
+    "unique_tx": 3835,
+    "venues_discovered_total": 571,
+    "window_h": 0.0744
+  },
+  "ts": "2026-07-22T04:40:51.464434+00:00",
+  "venue": "ethereum_mev_share_flashbots"
+}

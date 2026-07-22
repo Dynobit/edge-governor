@@ -1,0 +1,27 @@
+{
+  "id": "berachain_pol_feesweep",
+  "lane": "berachain_pol_feesweep",
+  "family": "fixed_price_fee_auction_sweep",
+  "source": "berachain-feesweep/fee_sweep_observe.py",
+  "updated": "2026-07-22T04:33:50Z",
+  "ts": "2026-07-22T04:33:50Z",
+  "active": true,
+  "ready": false,
+  "route_executable": false,
+  "candidate_present": false,
+  "candidate": {},
+  "executable": false,
+  "profitable_signal": false,
+  "expected_net_usd": 0.0,
+  "best_net_usd": 0.0,
+  "opportunity_count": 0,
+  "notional_usd": 0.0,
+  "observe_only": true,
+  "blockers": [
+    "no_live_broadcast_from_observe_probe",
+    "no_executor_contract_deployed_on_berachain",
+    "fixed_price_fcfs_race_landing_unproven",
+    "no_unclaimed_basket_above_payout_present"
+  ],
+  "note": "Fixed-price FCFS fee-sweep. Residential-shaped (valuation edge, not latency). Signal flips only when a live collector holds a basket worth > payout+gas+slippage that is currently UNCLAIMED. Executor intentionally absent (observe-first)."
+}

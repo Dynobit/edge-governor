@@ -1,0 +1,32 @@
+{
+  "lane": "revenant_freshness",
+  "generated_at": "2026-07-22T11:38:36.381184+00:00",
+  "status": "REVENANT_NO_FRESH_MARKETS",
+  "strict_net_usd": 0.0,
+  "headline_net_usd": 0.0,
+  "summary": {
+    "est_net_usd_per_day": 0.0
+  },
+  "refund_fraction_assumed": 0.0,
+  "landable": false,
+  "proven": false,
+  "scaling": "freshness_provision",
+  "candidate_count": 0,
+  "passing_count": 0,
+  "top_market": null,
+  "candidates": [],
+  "capture": {
+    "active": true,
+    "today": "2026-07-22",
+    "rows_by_signal": {
+      "pool_state": 156,
+      "mempool_arrival": 10617
+    },
+    "heartbeat": {
+      "ts": "2026-07-22T11:38:10.426591+00:00",
+      "records_written": 1324,
+      "ticks": 20,
+      "pid": 90967
+    }
+  }
+}

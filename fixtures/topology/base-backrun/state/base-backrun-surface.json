@@ -1,0 +1,23 @@
+{
+ "id": "base_backrun",
+ "lane": "base_backrun",
+ "family": "l2_confirmed_state_backrun",
+ "source": "base-backrun/detector.py",
+ "ts": "2026-07-22T12:07:20Z",
+ "updated": "2026-07-22T12:07:20Z",
+ "active": true,
+ "ready": false,
+ "executable": false,
+ "route_executable": false,
+ "candidate_present": true,
+ "expected_net_usd": 0.0,
+ "observe_only": true,
+ "best_net_bps_seen": 4.23,
+ "clears_observed": 10,
+ "blockers": [
+  "paper_only_no_flash_arb_contract_deployed",
+  "landing_rate_unproven_no_public_mempool",
+  "priority_fee_race_vs_colocated_builders"
+ ],
+ "note": "Node-driven Base cross-DEX (UniV3 vs Aerodrome) backrun detector, fee+gas HONEST (corrects fee-tier-basis illusion). Fires only on cross-DEX gap > both fees + gas. Promote to executor + cheap landing test ONLY if a real recurring net-positive prize appears."
+}

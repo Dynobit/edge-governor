@@ -1,0 +1,116 @@
+{
+  "ts": "2026-07-01T13:36:05+00:00",
+  "mode": "read_only_observability",
+  "arms_nothing": true,
+  "principle": "represent BLOCK-walled + funded-dormant MEV lanes as reachable=False rows so the router/model knows the full surface it is (correctly) not driving",
+  "sensor_present": true,
+  "sensor_verdict": "ARMABLE: none (expected \u2014 no measured class clears the net-cost floor)",
+  "counts": {
+    "total": 9,
+    "walled": 6,
+    "dormant": 3,
+    "reachable": 0
+  },
+  "lanes": [
+    {
+      "id": "backrun",
+      "family": "mev_walled",
+      "mu": 0.0,
+      "sigma": 0.02,
+      "traffic": 1.0,
+      "cost": 0.004,
+      "reachable": false,
+      "why": "BLOCK-domain in-block write moat; residential node is read-side; large-write backruns found but 0 land after residential discount",
+      "source": "mev-pro sensor sensor_status.json armable=0"
+    },
+    {
+      "id": "bruteforce",
+      "family": "mev_walled",
+      "mu": 0.0,
+      "sigma": 0.02,
+      "traffic": 1.0,
+      "cost": 0.004,
+      "reachable": false,
+      "why": "BLOCK-domain in-block write moat; residential node is read-side; exhaustive cycle search, constraint is landing not finding",
+      "source": "mev-pro sensor sensor_status.json armable=0"
+    },
+    {
+      "id": "competitive_exec",
+      "family": "mev_walled",
+      "mu": 0.0,
+      "sigma": 0.02,
+      "traffic": 1.0,
+      "cost": 0.004,
+      "reachable": false,
+      "why": "BLOCK-domain in-block write moat; residential node is read-side; public-mempool land-prob ~0 vs colo/private-bundle",
+      "source": "mev-pro sensor sensor_status.json armable=0"
+    },
+    {
+      "id": "sandwich",
+      "family": "mev_walled",
+      "mu": 0.0,
+      "sigma": 0.02,
+      "traffic": 1.0,
+      "cost": 0.004,
+      "reachable": false,
+      "why": "BLOCK-domain in-block write moat; residential node is read-side; front+back pair needs bundle inclusion; residential mempool loses the race",
+      "source": "static:sandwich"
+    },
+    {
+      "id": "residential_atomic",
+      "family": "mev_walled",
+      "mu": 0.0,
+      "sigma": 0.02,
+      "traffic": 1.0,
+      "cost": 0.004,
+      "reachable": false,
+      "why": "BLOCK-domain in-block write moat; residential node is read-side; atomic capture from public-mempool residential node; no bundle privileges",
+      "source": "static:residential_atomic"
+    },
+    {
+      "id": "atlas_oev",
+      "family": "mev_walled",
+      "mu": 0.0,
+      "sigma": 0.02,
+      "traffic": 1.0,
+      "cost": 0.004,
+      "reachable": false,
+      "why": "BLOCK-domain in-block write moat; residential node is read-side; single-incumbent solver auction, no accessible bid lane",
+      "source": "mev-pro sensor sensor_status.json armable=0"
+    },
+    {
+      "id": "drift_jit",
+      "family": "mev_dormant",
+      "mu": 0.0,
+      "sigma": 0.02,
+      "traffic": 1.0,
+      "cost": 0.004,
+      "reachable": false,
+      "why": "funded_dormant: edge above a capital/access gate; Drift/Velocity JIT maker edge real but thin+capital-gated, venue frozen",
+      "source": "mev-pro sensor sensor_status.json armable=0"
+    },
+    {
+      "id": "across_relayer",
+      "family": "mev_dormant",
+      "mu": 0.0,
+      "sigma": 0.02,
+      "traffic": 1.0,
+      "cost": 0.004,
+      "reachable": false,
+      "why": "funded_dormant: edge above a capital/access gate; Across relayer needs bonded fill inventory (capital), not block access",
+      "source": "static:across_relayer"
+    },
+    {
+      "id": "cross_rollup",
+      "family": "mev_dormant",
+      "mu": 0.0,
+      "sigma": 0.02,
+      "traffic": 1.0,
+      "cost": 0.004,
+      "reachable": false,
+      "why": "funded_dormant: edge above a capital/access gate; cross-rollup arb needs pre-positioned float on both legs (capital)",
+      "source": "static:cross_rollup"
+    }
+  ],
+  "note": "mu=0.0 on every row \u2014 nothing here is tradeable. WALLED = in-block write moat (cleverness never lands it); DORMANT = capital/access gate (money/enrollment could). Feed lanes[] straight into least_traffic_router.route() \u2014 they land in excluded_unreachable with `why` now on the record. Read-only; arms nothing."
+}
