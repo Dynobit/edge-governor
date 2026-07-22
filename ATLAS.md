@@ -41,10 +41,10 @@ larger *position* (capital + inclusion power), not a cleverer edge.
 
 Every candidate is machine-gated: it is only a real edge if it is simultaneously net-positive after ALL costs (not a touch/gross artifact), transactable (not phantom), landable without a builder seat, sized at real capital, non-toxic, and meaningful (clears a $/day bar or is a proven capital-scaling edge that beats HLP). The gate kills false-greens at the source and directs the hunt to the only structurally-open lane: earliness in a fresh, uncontested market.
 
-**Current live verdict (2026-07-22T11:30:00Z):** NO EDGE PASSES. Closest: hip3_thin_market_mm ($1.12/day, closeness 0.859) — needs: either >= the $/day bar, or become a proven capital-scaling high-% edge. Do NOT arm.
+**Current live verdict (2026-07-22T11:45:00Z):** NO EDGE PASSES. Closest: hip3_thin_market_mm ($1.09/day, closeness 0.859) — needs: either >= the $/day bar, or become a proven capital-scaling high-% edge. Do NOT arm.
 
 False-greens caught this run (headline inflated vs strict/executable):
-- `hip3_thin_market_mm`: headline $82.31/d → governed $1.1194/d (73.5x)
+- `hip3_thin_market_mm`: headline $93.15/d → governed $1.0942/d (85.1x)
 
 Live hunt — fresh markets ranked by measured edge: xyz:CRWV ($+0.83), xyz:BE ($+0.66), xyz:KIOXIA ($+0.63)
 

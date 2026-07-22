@@ -45,8 +45,8 @@ Full receipts for each in `ATLAS.md`; the gate that enforces them in `governor.p
 
 ## Live verification
 
-- Governor verdict, 2026-07-22T11:30:00Z: **NO EDGE PASSES. Closest: hip3_thin_market_mm ($1.12/day, closeness 0.859) — needs: either >= the $/day bar, or become a proven capital-scaling high-% edge. Do NOT arm.**
-- Lanes governed: 11; passing: 0; ledger entries: 25
+- Governor verdict, 2026-07-22T11:45:00Z: **NO EDGE PASSES. Closest: hip3_thin_market_mm ($1.09/day, closeness 0.859) — needs: either >= the $/day bar, or become a proven capital-scaling high-% edge. Do NOT arm.**
+- Lanes governed: 11; passing: 0; ledger entries: 26
 - Reproduce: `git clone` → `python3 governor.py` (stdlib only, no keys, deploys nothing).
 
 ## The value proposition
