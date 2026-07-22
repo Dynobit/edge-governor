@@ -10,9 +10,9 @@
  "signed": false,
  "broadcast": false,
  "wallet_loaded": false,
- "honest_tape_hours": 11.4689,
+ "honest_tape_hours": 11.7692,
  "strict_net_usd": 0.5054,
- "touch_net_usd": 43.3327,
+ "touch_net_usd": 43.7771,
  "strict_fills": 47,
  "round_trips": 23,
  "median_rt_pnl_usd": 0.0094,
@@ -20,7 +20,7 @@
  "markout_5m_bps_ask": 18.3585,
  "gross_inv_usd": 0.0,
  "capital_at_risk_usd": 400.0,
- "daily_pct_at_risk_capital": 0.002645,
+ "daily_pct_at_risk_capital": 0.002577,
  "per_symbol_net": {
   "xyz:CXMT": 0.0711,
   "xyz:BB": -0.3304,
@@ -39,9 +39,9 @@
   "xyz:JP225": -0.1383
  },
  "expected_usd_day": 0.0,
- "paper_net_per_day_usd": 1.058,
+ "paper_net_per_day_usd": 1.031,
  "blockers": [
-  "paper_only_no_signer_wired",
+  "signer_built_awaiting_operator_testnet_classproof",
   "realized_pnl_over_72h_required_before_arm"
  ],
  "gates": {
@@ -53,6 +53,6 @@
   "no_halt": true
  },
  "proven_landings": [],
- "generated_at": "2026-07-22T12:07:01Z",
- "updated": 1784722021
+ "generated_at": "2026-07-22T12:25:03Z",
+ "updated": 1784723103
 }
