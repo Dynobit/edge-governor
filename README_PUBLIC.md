@@ -17,4 +17,14 @@ Two claims, both checkable from this repo alone:
 
 stdlib only. No keys. Nothing here signs, deploys, or moves funds.
 Fixture surfaces are sanitized copies of the live lane state the governor gated on
-(internal hosts and operator accounts redacted; verdict-relevant numbers untouched).
+(internal hosts redacted; verdict-relevant numbers untouched).
+
+## Published estate (verify it yourself)
+
+Main Hyperliquid account: `0xbe6C1b09662BbE52CC93279D103Feb27985DdBc1`
+The committed `estate_chain.jsonl` is the hash-chained history for the whole estate
+(all addresses inside it). Recompute right now:
+
+    python3 verify_estate.py --address 0xbe6C1b09662BbE52CC93279D103Feb27985DdBc1 --chain estate_chain.jsonl
+
+Anything that doesn't recompute is a lie — call it out.
