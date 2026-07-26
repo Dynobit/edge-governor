@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import os
+from datetime import datetime, timezone
 from typing import Any
 
 from knowledge import EDGE_CAN_LIVE, FRESH_FLOW_SOURCES, KNOWLEDGE
@@ -27,30 +28,127 @@ def _load(path: str) -> Any:
         return None
 
 
-def read_fresh_flow() -> list[dict]:
-    """Pull newly-born markets/venues from the live freshness sentinels. Robust to
-    list- or dict-shaped sources; returns normalized {name, venue, age_hint, raw}."""
+SOURCE_MAX_AGE_SECONDS = float(os.environ.get("GOV_FRESH_SOURCE_MAX_AGE_SECONDS", "7200"))
+MARKET_MAX_AGE_HOURS = float(os.environ.get("GOV_FRESH_MARKET_MAX_AGE_HOURS", "48"))
+
+
+def _parse_ts(value: Any) -> datetime | None:
+    if not isinstance(value, str) or not value.strip():
+        return None
+    try:
+        return datetime.fromisoformat(value.strip().replace("Z", "+00:00")).astimezone(timezone.utc)
+    except (ValueError, TypeError):
+        return None
+
+
+def _source_timestamp(path: str, data: Any) -> datetime | None:
+    if isinstance(data, dict):
+        for key in ("ts", "updated", "generated_at", "timestamp"):
+            parsed = _parse_ts(data.get(key))
+            if parsed is not None:
+                return parsed
+    try:
+        return datetime.fromtimestamp(os.stat(path).st_mtime, tz=timezone.utc)
+    except OSError:
+        return None
+
+
+def _explicit_fresh_rows(data: Any) -> tuple[Any, str]:
+    """Return only rows a producer explicitly labels as fresh.
+
+    Inventory keys such as targets/markets/seen are intentionally excluded. They
+    describe the current or historical universe and were the source of a large
+    false-green when every live HIP-3 market was relabelled as a new birth.
+    """
+    if isinstance(data, list):
+        return data, "explicit_list"
+    if not isinstance(data, dict):
+        return [], "invalid_shape"
+    for key in ("fresh_targets", "adopt_candidates", "fresh", "births"):
+        if key in data:
+            return data.get(key) or [], key
+    if isinstance(data.get("new_this_cycle"), (list, dict)):
+        return data["new_this_cycle"], "new_this_cycle"
+    return [], "no_explicit_fresh_rows"
+
+
+def read_fresh_flow_with_diagnostics(
+    now: datetime | None = None,
+) -> tuple[list[dict], list[dict]]:
+    """Pull explicitly fresh rows from timely sentinel snapshots.
+
+    Source inventory is never inferred to be fresh. Stale or malformed sources
+    fail closed and are retained as diagnostics rather than becoming candidates.
+    """
+    now = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
     out: list[dict] = []
+    diagnostics: list[dict] = []
     for src in FRESH_FLOW_SOURCES:
         data = _load(src)
         if data is None:
+            diagnostics.append({"source": src, "status": "missing_or_invalid"})
             continue
-        rows = data if isinstance(data, list) else (
-            data.get("targets") or data.get("fresh") or data.get("markets")
-            or data.get("births") or data.get("seen") or [])
+        source_ts = _source_timestamp(src, data)
+        if source_ts is None:
+            diagnostics.append({"source": src, "status": "timestamp_unknown"})
+            continue
+        source_age_s = (now - source_ts).total_seconds()
+        if source_age_s < -300:
+            diagnostics.append({"source": src, "status": "timestamp_in_future",
+                                "source_ts": source_ts.isoformat(),
+                                "age_seconds": round(source_age_s, 3)})
+            continue
+        if source_age_s > SOURCE_MAX_AGE_SECONDS:
+            diagnostics.append({"source": src, "status": "stale",
+                                "source_ts": source_ts.isoformat(),
+                                "age_seconds": round(source_age_s, 3),
+                                "max_age_seconds": SOURCE_MAX_AGE_SECONDS})
+            continue
+
+        rows, row_field = _explicit_fresh_rows(data)
         if isinstance(rows, dict):
             rows = [{"name": k, **(v if isinstance(v, dict) else {"value": v})} for k, v in rows.items()]
+        if not isinstance(rows, list):
+            diagnostics.append({"source": src, "status": "invalid_rows",
+                                "row_field": row_field})
+            continue
+        accepted = 0
+        expired = 0
         for r in (rows or []):
             if isinstance(r, str):
                 r = {"name": r}
             if not isinstance(r, dict):
                 continue
+            age_hint = r.get("age_h") if r.get("age_h") is not None else r.get("age_hours")
+            row_max_age_h = (data.get("alert_age_hours", MARKET_MAX_AGE_HOURS)
+                             if isinstance(data, dict) else MARKET_MAX_AGE_HOURS)
+            if isinstance(age_hint, (int, float)) and (
+                age_hint < 0 or age_hint > float(row_max_age_h)
+            ):
+                expired += 1
+                continue
             out.append({
-                "name": str(r.get("name") or r.get("symbol") or r.get("market") or r.get("id") or "?"),
+                "name": str(r.get("name") or r.get("symbol") or r.get("market")
+                            or r.get("pair") or r.get("market_id") or r.get("id") or "?"),
                 "venue": str(r.get("venue") or r.get("dex") or os.path.basename(src)),
-                "age_hint": r.get("age_h") or r.get("age_hours") or r.get("first_seen"),
-                "source": src, "raw": r,
+                "age_hint": (age_hint if age_hint is not None else r.get("first_seen")),
+                "source": src, "source_ts": source_ts.isoformat(), "raw": r,
             })
+            accepted += 1
+        declared = data.get("fresh_this_cycle") if isinstance(data, dict) else None
+        diagnostics.append({
+            "source": src,
+            "status": "accepted" if accepted else "no_candidates",
+            "source_ts": source_ts.isoformat(),
+            "age_seconds": round(source_age_s, 3),
+            "row_field": row_field,
+            "declared_fresh_this_cycle": declared,
+            "accepted_rows": accepted,
+            "expired_rows": expired,
+            "inventory_ignored": bool(isinstance(data, dict) and any(
+                key in data for key in ("targets", "markets", "seen")
+            )),
+        })
     # dedup by (name, venue)
     seen, uniq = set(), []
     for r in out:
@@ -58,7 +156,12 @@ def read_fresh_flow() -> list[dict]:
         if key not in seen:
             seen.add(key)
             uniq.append(r)
-    return uniq
+    return uniq, diagnostics
+
+
+def read_fresh_flow() -> list[dict]:
+    """Compatibility wrapper returning only normalized fresh candidates."""
+    return read_fresh_flow_with_diagnostics()[0]
 
 
 def _measured_per_symbol() -> dict[str, float]:
@@ -78,7 +181,10 @@ def edge_can_live_profile() -> dict[str, str]:
 
 def hunt(verdicts: list, fresh: list[dict] | None = None, k=KNOWLEDGE) -> dict[str, Any]:
     """Build the ranked hunt list from gated verdicts + fresh-flow candidates."""
-    fresh = read_fresh_flow() if fresh is None else fresh
+    if fresh is None:
+        fresh, fresh_diagnostics = read_fresh_flow_with_diagnostics()
+    else:
+        fresh_diagnostics = []
 
     # closest existing lanes (rejected but nearest to real) — the guided-improvement list
     closest = sorted([v for v in verdicts if not v.passed], key=lambda v: v.closeness, reverse=True)
@@ -125,6 +231,7 @@ def hunt(verdicts: list, fresh: list[dict] | None = None, k=KNOWLEDGE) -> dict[s
         "priority_uncapped": priority,
         "fresh_uncontested": fresh_rows,
         "fresh_count": len(fresh_rows),
+        "fresh_source_diagnostics": fresh_diagnostics,
         "closest_existing": closest_rows,
         "directive": ((f"PRIORITY: {len(priority)} uncapped-upside dutch-book market(s) live -- probe NOW (the one fresh edge not capped by our capital). " if priority else "")
                       + _directive(closest_rows, fresh_rows, k)),
